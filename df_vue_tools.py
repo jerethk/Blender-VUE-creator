@@ -1,6 +1,6 @@
 import bpy
 from bpy.types import Panel, Operator, PropertyGroup, Object
-from bpy.props import IntProperty, PointerProperty, FloatProperty
+from bpy.props import IntProperty, PointerProperty, FloatProperty, BoolProperty
 import bpy.utils.previews
 from bpy.utils import register_class, unregister_class, previews
 import random
@@ -19,27 +19,30 @@ class ADDONNAME_PT_main_panel(Panel):
     bl_category = "DF Tools"
 
 
- 
-
     def draw(self, context):
         layout = self.layout
         scene = context.scene
         mytool = scene.my_tool
-
                         
         col = self.layout.box().column()
-        
                         
         grid = col.grid_flow(columns=1, align=True)
-     
         
         grid.operator("addonname.myop_import3do")
         grid.operator("addonname.myop_importlev")
         grid.operator("addonname.myop_operator3")
-        grid.operator("addonname.myop_operator4")
         grid.operator("addonname.myop_operator5")
 
+        layout.row().label(text="Currently selected objects:")
 
+        # Show a checkbox for each object representing whether it is selected
+        for obj in bpy.data.objects:
+            if obj.type != 'MESH':
+                continue
+            row = layout.row()
+            row.prop(obj, "is_selected")
+            row.label(text=obj.name)
+        
 
 
 class ADDONNAME_OT_Import3do(Operator):
@@ -122,21 +125,28 @@ classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONN
  
  
 def register():
+    bpy.data.texts["import_lev.py"].as_module().register()
+    bpy.data.texts["import3do.py"].as_module().register()
+
     for cls in classes:
         bpy.utils.register_class(cls)
-        bpy.types.Scene.my_tool = PointerProperty(type= MyProperties)
+        
+    bpy.types.Scene.my_tool = PointerProperty(type= MyProperties)
+    
+    # Add a custom is_selected property to objects
+    bpy.types.Object.is_selected = BoolProperty(name="", get=lambda self: self.select_get() == True, set=lambda self, value: self.select_set(value))
 
 
  
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
-        del bpy.types.Scene.my_tool
+        
+    del bpy.types.Scene.my_tool
+    del bpy.types.Object.is_selected
 
 
  
  
 if __name__ == "__main__":
     register()
-    bpy.data.texts["import_lev.py"].as_module().register()
-    bpy.data.texts["import3do.py"].as_module().register()
