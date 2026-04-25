@@ -31,7 +31,7 @@ class ADDONNAME_PT_main_panel(Panel):
         grid.operator("addonname.myop_import3do")
         grid.operator("addonname.myop_importlev")
         grid.operator("addonname.myop_operator3")
-        grid.operator("addonname.myop_operator5")
+        grid.operator("addonname.myop_exportvue")
 
         layout.row().label(text="Currently selected objects:")
 
@@ -98,35 +98,30 @@ class ADDONNAME_OT_my_op4(Operator):
         scene = context.scene
         mytool = scene.my_tool
         
-
-
-    
         return {'FINISHED'}
     
     
     
-class ADDONNAME_OT_my_op5(Operator):
+class ADDONNAME_OT_ExportVue(Operator):
     """Export the selected objects as a .VUE animation data file for Dark Forces"""
     bl_label = "Export Selected (Multiple) .VUE"
-    bl_idname = "addonname.myop_operator5"
+    bl_idname = "addonname.myop_exportvue"
         
     def execute(self, context):
         scene = context.scene
-        mytool = scene.my_tool
-        
-
-
+        bpy.ops.export_.vue('INVOKE_DEFAULT')
     
         return {'FINISHED'}
 
 
 
-classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONNAME_OT_ImportLev, ADDONNAME_OT_my_op3, ADDONNAME_OT_my_op4, ADDONNAME_OT_my_op5]
+classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONNAME_OT_ImportLev, ADDONNAME_OT_my_op3, ADDONNAME_OT_my_op4, ADDONNAME_OT_ExportVue]
  
  
 def register():
     bpy.data.texts["import_lev.py"].as_module().register()
     bpy.data.texts["import3do.py"].as_module().register()
+    bpy.data.texts["write_vue_ZXY.py"].as_module().register()
 
     for cls in classes:
         bpy.utils.register_class(cls)
