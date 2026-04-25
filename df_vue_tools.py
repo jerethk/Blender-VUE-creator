@@ -33,8 +33,8 @@ class ADDONNAME_PT_main_panel(Panel):
         grid = col.grid_flow(columns=1, align=True)
      
         
-        grid.operator("addonname.myop_operator1")
-        grid.operator("addonname.myop_operator2")
+        grid.operator("addonname.myop_import3do")
+        grid.operator("addonname.myop_importlev")
         grid.operator("addonname.myop_operator3")
         grid.operator("addonname.myop_operator4")
         grid.operator("addonname.myop_operator5")
@@ -42,32 +42,27 @@ class ADDONNAME_PT_main_panel(Panel):
 
 
 
-class ADDONNAME_OT_my_op1(Operator):
+class ADDONNAME_OT_Import3do(Operator):
     """Import a Dark Forces 3DO object file into Blender"""
     bl_label = "Import .3DO"
-    bl_idname = "addonname.myop_operator1"
+    bl_idname = "addonname.myop_import3do"
         
     def execute(self, context):
         scene = context.scene
-        mytool = scene.my_tool
-        
-        s = random.choice(range(0, 40))
-        bpy.data.objects["Cube"].scale[0] = s*0.1
+        bpy.ops.import_vue.df3do('INVOKE_DEFAULT')
     
         return {'FINISHED'}
     
     
     
-class ADDONNAME_OT_my_op2(Operator):
+class ADDONNAME_OT_ImportLev(Operator):
     """Import a Dark Forces .LEV level file into Blender"""
     bl_label = "Import .LEV"
-    bl_idname = "addonname.myop_operator2"
+    bl_idname = "addonname.myop_importlev"
         
     def execute(self, context):
         scene = context.scene
-        mytool = scene.my_tool
-        
-
+        bpy.ops.import_vue.dflev('INVOKE_DEFAULT')
 
     
         return {'FINISHED'}
@@ -123,7 +118,7 @@ class ADDONNAME_OT_my_op5(Operator):
 
 
 
-classes = [MyProperties,ADDONNAME_PT_main_panel, ADDONNAME_OT_my_op1, ADDONNAME_OT_my_op2, ADDONNAME_OT_my_op3, ADDONNAME_OT_my_op4, ADDONNAME_OT_my_op5]
+classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONNAME_OT_ImportLev, ADDONNAME_OT_my_op3, ADDONNAME_OT_my_op4, ADDONNAME_OT_my_op5]
  
  
 def register():
@@ -143,3 +138,5 @@ def unregister():
  
 if __name__ == "__main__":
     register()
+    bpy.data.texts["import_lev.py"].as_module().register()
+    bpy.data.texts["import3do.py"].as_module().register()
