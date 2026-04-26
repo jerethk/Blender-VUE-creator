@@ -109,7 +109,9 @@ class ADDONNAME_OT_ExportVue(Operator):
         
     def execute(self, context):
         scene = context.scene
-        bpy.ops.export_.vue('INVOKE_DEFAULT')
+        
+        if len(context.selected_objects) > 0:
+            bpy.ops.export_.vue('INVOKE_DEFAULT')
     
         return {'FINISHED'}
 
