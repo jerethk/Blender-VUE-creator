@@ -123,7 +123,7 @@ classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONN
 def register():
     bpy.data.texts["import_lev.py"].as_module().register()
     bpy.data.texts["import3do.py"].as_module().register()
-    bpy.data.texts["write_vue_ZXY.py"].as_module().register()
+    bpy.data.texts["write_vue.py"].as_module().register()
 
     for cls in classes:
         bpy.utils.register_class(cls)

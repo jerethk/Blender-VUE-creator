@@ -20,15 +20,15 @@ def write_vue(context, filepath):
             pch = -obj.rotation_euler.x 
             yaw = -obj.rotation_euler.z
             rol = -obj.rotation_euler.y
-            a = math.cos(yaw) * math.cos(rol) - math.sin(yaw) * math.sin(pch) * math.sin(rol)
-            b = -math.cos(pch) * math.sin(yaw)
-            c = math.cos(yaw) * math.sin(rol) + math.cos(rol) * math.sin(yaw) * math.sin(pch)
-            d = math.cos(rol) * math.sin(yaw) + math.cos(yaw) * math.sin(pch) * math.sin(rol)
-            e = math.cos(yaw) * math.cos(pch)
-            f = math.sin(yaw) * math.sin(rol) - math.cos(yaw) * math.cos(rol) * math.sin(pch)
-            g = -math.cos(pch) * math.sin(rol)
-            h = math.sin(pch)
-            i = math.cos(pch) * math.cos(rol)
+            a = obj.matrix_world[0][0]
+            b = obj.matrix_world[1][0]
+            c = obj.matrix_world[2][0]
+            d = obj.matrix_world[0][1]
+            e = obj.matrix_world[1][1]
+            f = obj.matrix_world[2][1]
+            g = obj.matrix_world[0][2]
+            h = obj.matrix_world[1][2]
+            i = obj.matrix_world[2][2]
             
             line = "transform \"{}\" {:f} {:f} {:f} {:f} {:f} {:f} {:f} {:f} {:f} {:.2f} {:.2f} {:.2f}"
             file.write(line.format(obj.name, a, b, c, d, e, f, g, h, i, obj.location.x, obj.location.y, obj.location.z) + "\n")
