@@ -65,28 +65,31 @@ def load_3do(context, filepath):
                     failed_polygons.append(p_counter)
 
             p_counter += 1
-                
+
+        # Create UVs if there are texture polygons
+        failed_poly_count = 0
+        new_bmesh.faces.index_update()
+        uv_layer = new_bmesh.loops.layers.uv[0]
+
+        for face in new_bmesh.faces:
+            if face.index in failed_polygons:
+                failed_poly_count += 1  # increment by 1 to ensure we continue to line up with the correct texture polygon
+            
+            if (face.index + failed_poly_count) >= len(object['tex_polygons']):
+                break   # there are no more texture polygons
+
+            tx_poly = object['tex_polygons'][face.index + failed_poly_count]
+
+            face.loops.index_update()
+            for loop in face.loops:
+                tvert_num = len(face.loops) - loop.index - 1  # reverse order
+                tx_vert = object['tex_vertices'][tx_poly[tvert_num]]
+                loop[uv_layer].uv = tx_vert
+
         newmesh = bpy.data.meshes.new(object['name'])
         new_bmesh.to_mesh(newmesh)
         newobj = bpy.data.objects.new(object['name'], newmesh)
         new_bmesh.free()
-        
-        # Create UVs if there are texture polygons
-        failed_poly_count = 0
-        for polygon in newobj.data.polygons:
-            if polygon.index in failed_polygons:
-                failed_poly_count += 1  # increment by 1 to ensure we continue to line up with the correct texture polygon
-            
-            if (polygon.index + failed_poly_count) >= len(object['tex_polygons']):
-                break   # there are no more texture polygons
-                
-            tx_poly = object['tex_polygons'][polygon.index + failed_poly_count]
-            
-            tvert_counter = len(polygon.loop_indices) - 1
-            for loop_index in polygon.loop_indices:
-                tx_vert = object['tex_vertices'][tx_poly[tvert_counter]]
-                newobj.data.uv_layers[0].data[loop_index].uv = tx_vert
-                tvert_counter -= 1
 
         if object['texture'] != -1:
             newobj.data.materials.append(materials_table[object['texture']])
