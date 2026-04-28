@@ -15,25 +15,20 @@ import bmesh
 def load_3do(context, filepath):
     model = read_3do(filepath)
     
-    if not len(model[1]):
+    if not len(model[2]):
         return
     
-    materials_table = []
-    for texture in model[0]:
-        new_mat = bpy.data.materials.new(texture.split('.')[0])
-        new_mat.use_nodes = True
-        materials_table.append(new_mat)
-    
-    for object in model[1]:
-        new_bmesh = bmesh.new()
-        uv_layer = new_bmesh.loops.layers.uv.new()
+    new_bmesh = bmesh.new()
+    uv_layer = new_bmesh.loops.layers.uv.new()
 
+    for object in model[2]:
         vertices = []
         for v in object['vertices']:
             vertices.append(new_bmesh.verts.new(v))
 
         p_counter = 0
         failed_polygons = []
+        obj_faces = []
         for p in object['polygons']:
             polygon_verts = []
             for pv in p['vertices']:
@@ -41,8 +36,11 @@ def load_3do(context, filepath):
                 
             try:
                 newface = new_bmesh.faces.new(polygon_verts)
+                newface.material_index = object['texture']
                 if p['shading'].lower() == "gouraud" or p['shading'].lower() == 'gourtex':
                     newface.smooth = True
+                
+                obj_faces.append(newface)    
                 
             except:
                 # try with a copy of the vertices - in case it failed due to a "double sided" polygon
@@ -57,8 +55,11 @@ def load_3do(context, filepath):
                     
                 try:
                     newface = new_bmesh.faces.new(polygon_verts_b)    
+                    newface.material_index = object['texture']
                     if p['shading'].lower() == "gouraud" or p['shading'].lower() == 'gourtex':
                         newface.smooth = True
+                        
+                    obj_faces.append(newface)    
 
                 except:        
                     print("unable to create polygon", p_counter)
@@ -69,38 +70,41 @@ def load_3do(context, filepath):
         # Create UVs if there are texture polygons
         failed_poly_count = 0
         new_bmesh.faces.index_update()
-        uv_layer = new_bmesh.loops.layers.uv[0]
 
-        for face in new_bmesh.faces:
-            if face.index in failed_polygons:
+        for f in range(len(obj_faces)):
+            if f in failed_polygons:
                 failed_poly_count += 1  # increment by 1 to ensure we continue to line up with the correct texture polygon
             
-            if (face.index + failed_poly_count) >= len(object['tex_polygons']):
+            if (f + failed_poly_count) >= len(object['tex_polygons']):
                 break   # there are no more texture polygons
 
-            tx_poly = object['tex_polygons'][face.index + failed_poly_count]
+            tx_poly = object['tex_polygons'][f + failed_poly_count]
 
+            face = obj_faces[f]
             face.loops.index_update()
             for loop in face.loops:
                 tvert_num = len(face.loops) - loop.index - 1  # reverse order
                 tx_vert = object['tex_vertices'][tx_poly[tvert_num]]
                 loop[uv_layer].uv = tx_vert
 
-        newmesh = bpy.data.meshes.new(object['name'])
-        new_bmesh.to_mesh(newmesh)
-        newobj = bpy.data.objects.new(object['name'], newmesh)
-        new_bmesh.free()
+    newmesh = bpy.data.meshes.new(model[0])
+    new_bmesh.to_mesh(newmesh)
+    newobj = bpy.data.objects.new(model[0], newmesh)
+    new_bmesh.free()
 
-        if object['texture'] != -1:
-            newobj.data.materials.append(materials_table[object['texture']])
-        
-        bpy.context.collection.objects.link(newobj)
-        
+    for texture in model[1]:
+        new_mat = bpy.data.materials.new(texture.split('.')[0])
+        new_mat.use_nodes = True
+        newmesh.materials.append(new_mat)
+    
+    bpy.context.collection.objects.link(newobj)
+    
     return {'FINISHED'}
 
 
 def read_3do(filename):
     lines = []
+    model_name = ""
     objects = []
     num_objects = 0
 
@@ -116,6 +120,13 @@ def read_3do(filename):
         return
 
     current_line = 0
+
+    while current_line < len(lines):
+        if lines[current_line][0].upper() != "3DONAME":
+            current_line += 1
+        else:
+            model_name = lines[current_line][1]
+            break;
 
     while current_line < len(lines):
         if lines[current_line][0].upper() != "OBJECTS":
@@ -269,7 +280,7 @@ def read_3do(filename):
             this_object['tex_polygons'].append(this_tex_poly)
 
         objects.append(this_object)
-    return (textures, objects)
+    return (model_name, textures, objects)
 
 
 # returns a line as a list of strings, removing comments
