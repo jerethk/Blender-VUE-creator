@@ -82,7 +82,7 @@ class ADDONNAME_OT_my_op3(Operator):
         mytool = scene.my_tool
         
 
-        bpy.ops.nla.bake(frame_start=1, frame_end=250, visual_keying=True, clear_constraints=True, clear_parents=True, use_current_action=True, bake_types={'OBJECT'})
+        bpy.ops.nla.bake(frame_start=1, frame_end=bpy.context.scene.frame_end, visual_keying=True, clear_constraints=True, clear_parents=True, use_current_action=True, bake_types={'OBJECT'})
 
     
         return {'FINISHED'}
