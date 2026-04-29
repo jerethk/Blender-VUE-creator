@@ -33,6 +33,27 @@ def write_vue(context, filepath):
             line = "transform \"{}\" {:f} {:f} {:f} {:f} {:f} {:f} {:f} {:f} {:f} {:.2f} {:.2f} {:.2f}"
             file.write(line.format(obj.name, a, b, c, d, e, f, g, h, i, obj.location.x, obj.location.y, obj.location.z) + "\n")
             
+        for obj in bpy.data.objects:
+            if obj.type == 'CAMERA':
+                x0 = obj.location.x
+                z0 = obj.location.y
+                y0 = obj.location.z
+                
+                # Blender's cameras point directly downward when unrotated, i.e. vector (0, 0, -1)
+                vec_x = -1 * obj.matrix_world[0][2]
+                vec_z = -1 * obj.matrix_world[1][2]
+                vec_y = -1 * obj.matrix_world[2][2]
+                x1 = x0 + vec_x
+                z1 = z0 + vec_z
+                y1 = y0 + vec_y
+                
+                # The format for camera lines is "camera x0 z0 y0 x1 z1 y1 roll ??"
+                # The DF camera cannot be rolled so we will just set it to zero
+                line = "camera {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} 0 0"
+                file.write(line.format(x0, z0, y0, x1, z1, y1) + "\n")
+
+                break   # only write 1 camera; if there are more, ignore them
+
     file.close()
     return {'FINISHED'}
 
