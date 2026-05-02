@@ -40,9 +40,9 @@ def write_vue(context, filepath):
                 y0 = obj.location.z
                 
                 # Blender's cameras point directly downward when unrotated, i.e. vector (0, 0, -1)
-                vec_x = -1 * obj.matrix_world[0][2]
-                vec_z = -1 * obj.matrix_world[1][2]
-                vec_y = -1 * obj.matrix_world[2][2]
+                vec_x = -10 * obj.matrix_world[0][2]
+                vec_z = -10 * obj.matrix_world[1][2]
+                vec_y = -10 * obj.matrix_world[2][2]
                 x1 = x0 + vec_x
                 z1 = z0 + vec_z
                 y1 = y0 + vec_y
