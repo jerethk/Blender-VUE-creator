@@ -32,6 +32,7 @@ class ADDONNAME_PT_main_panel(Panel):
         grid.operator("addonname.myop_importlev")
         grid.operator("addonname.myop_operator3")
         grid.operator("addonname.myop_exportvue")
+        grid.operator("addonname.myop_export3do")
 
         layout.row().label(text="Currently selected objects:")
 
@@ -89,19 +90,6 @@ class ADDONNAME_OT_my_op3(Operator):
     
     
     
-class ADDONNAME_OT_my_op4(Operator):
-    """Export the active object only as a .VUE animation data file for Dark Forces"""
-    bl_label = "Export Active (Single) .VUE"
-    bl_idname = "addonname.myop_operator4"
-        
-    def execute(self, context):
-        scene = context.scene
-        mytool = scene.my_tool
-        
-        return {'FINISHED'}
-    
-    
-    
 class ADDONNAME_OT_ExportVue(Operator):
     """Export the selected objects as a .VUE animation data file for Dark Forces"""
     bl_label = "Export Selected (Multiple) .VUE"
@@ -117,13 +105,29 @@ class ADDONNAME_OT_ExportVue(Operator):
 
 
 
-classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONNAME_OT_ImportLev, ADDONNAME_OT_my_op3, ADDONNAME_OT_my_op4, ADDONNAME_OT_ExportVue]
+class ADDONNAME_OT_Export3do(Operator):
+    """Export the active object only as a .3DO file for Dark Forces"""
+    bl_label = "Export Active Object as .3DO"
+    bl_idname = "addonname.myop_export3do"
+        
+    def execute(self, context):
+        scene = context.scene
+        
+        if bpy.context.active_object.type == 'MESH':
+            bpy.ops.export_vue.df3do('INVOKE_DEFAULT')
+        
+        return {'FINISHED'}
+
+
+
+classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONNAME_OT_ImportLev, ADDONNAME_OT_my_op3, ADDONNAME_OT_Export3do, ADDONNAME_OT_ExportVue]
  
  
 def register():
     bpy.data.texts["import_lev.py"].as_module().register()
     bpy.data.texts["import3do.py"].as_module().register()
     bpy.data.texts["write_vue.py"].as_module().register()
+    bpy.data.texts["export3do.py"].as_module().register()
 
     for cls in classes:
         bpy.utils.register_class(cls)

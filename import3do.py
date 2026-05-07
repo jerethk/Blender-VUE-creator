@@ -1,13 +1,3 @@
-bl_info = {
-    "name": "Dark Forces 3DO Importer",
-    "description": "Import Dark Forces 3DO models",
-    "author": "JerethK",
-    "version": (1, 1),
-    "blender": (2, 83, 0),
-    "category": "Import-Export",
-}
-
-
 import bpy
 import bmesh
 
@@ -315,20 +305,13 @@ class Import3DO(Operator, ImportHelper):
         return load_3do(context, self.filepath)
 
 
-# Only needed if you want to add into a dynamic menu.
-#def menu_func_import(self, context):
-#    self.layout.operator(Import3DO.bl_idname, text="Dark Forces 3DO (.3do)")
-
-
 # Register and add to the "file selector" menu (required to use F3 search "Text Import Operator" for quick access).
 def register():
     bpy.utils.register_class(Import3DO)
-    #bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 
 def unregister():
     bpy.utils.unregister_class(Import3DO)
-    #bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 
 if __name__ == "__main__":
