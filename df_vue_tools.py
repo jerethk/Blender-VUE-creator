@@ -30,7 +30,7 @@ class ADDONNAME_PT_main_panel(Panel):
         
         grid.operator("addonname.myop_import3do")
         grid.operator("addonname.myop_importlev")
-        grid.operator("addonname.myop_operator3")
+        grid.operator("addonname.myop_bakekeyframes")
         grid.operator("addonname.myop_exportvue")
         grid.operator("addonname.myop_export3do")
 
@@ -73,10 +73,10 @@ class ADDONNAME_OT_ImportLev(Operator):
     
     
     
-class ADDONNAME_OT_my_op3(Operator):
+class ADDONNAME_OT_Bake(Operator):
     """Bake all animations and constraints on the selected object to keyframes"""
     bl_label = "Bake Keyframes on Selected"
-    bl_idname = "addonname.myop_operator3"
+    bl_idname = "addonname.myop_bakekeyframes"
         
     def execute(self, context):
         scene = context.scene
@@ -92,7 +92,7 @@ class ADDONNAME_OT_my_op3(Operator):
     
 class ADDONNAME_OT_ExportVue(Operator):
     """Export the selected objects as a .VUE animation data file for Dark Forces"""
-    bl_label = "Export Selected (Multiple) .VUE"
+    bl_label = "Export Selected Objects as .VUE"
     bl_idname = "addonname.myop_exportvue"
         
     def execute(self, context):
@@ -120,7 +120,7 @@ class ADDONNAME_OT_Export3do(Operator):
 
 
 
-classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONNAME_OT_ImportLev, ADDONNAME_OT_my_op3, ADDONNAME_OT_Export3do, ADDONNAME_OT_ExportVue]
+classes = [MyProperties, ADDONNAME_PT_main_panel, ADDONNAME_OT_Import3do, ADDONNAME_OT_ImportLev, ADDONNAME_OT_Bake, ADDONNAME_OT_Export3do, ADDONNAME_OT_ExportVue]
  
  
 def register():
